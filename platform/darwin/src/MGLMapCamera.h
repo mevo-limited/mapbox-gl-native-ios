@@ -119,6 +119,26 @@ MGL_EXPORT
                                         heading:(CLLocationDirection)heading;
 
 /**
+ Returns a new camera with the given altitude, pitch, and heading.
+ @param centerCoordinate The geographic coordinate on which the map should be
+ centered.
+ @param altitude The altitude (measured in meters) above the map at which the
+ camera should be situated. The altitude may be less than the distance from
+ the camera’s viewpoint to the camera’s focus point.
+ @param pitch The viewing angle of the camera, measured in degrees. A value of
+ `0` results in a camera pointed straight down at the map. Angles greater
+ than `0` result in a camera angled toward the horizon.
+ @param heading The camera’s heading, measured in degrees clockwise from true
+ north. A value of `0` means that the top edge of the map view corresponds to
+ true north. The value `90` means the top of the map is pointing due east.
+ The value `180` means the top of the map points due south, and so on.
+ */
++ (instancetype)cameraLookingAtCenterCoordinate:(CLLocationCoordinate2D)centerCoordinate
+                                       altitude:(CLLocationDistance)altitude
+                                          pitch:(CGFloat)pitch
+                                        heading:(CLLocationDirection)heading;
+
+/**
   Returns a new camera with the given altitude, pitch, and heading.
 
   @param centerCoordinate The geographic coordinate on which the map should be

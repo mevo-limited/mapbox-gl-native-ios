@@ -40,12 +40,12 @@ BOOL MGLEqualFloatWithAccuracy(CGFloat left, CGFloat right, CGFloat accuracy)
         CGFloat radianPitch = atan2(eyeAltitude, groundDistance);
         pitch = mbgl::util::wrap(90 - MGLDegreesFromRadians(radianPitch), 0.0, 360.0);
     }
-
+    
     return [[self alloc] initWithCenterCoordinate:centerCoordinate
                                          altitude:eyeAltitude
                                             pitch:pitch
-                                           heading:heading
-                                           padding:MGLEdgeInsetsZero];
+                                          heading:heading
+                                          padding:MGLEdgeInsetsZero];
 }
 
 + (instancetype)cameraLookingAtCenterCoordinate:(CLLocationCoordinate2D)centerCoordinate
@@ -61,7 +61,8 @@ BOOL MGLEqualFloatWithAccuracy(CGFloat left, CGFloat right, CGFloat accuracy)
     return [[self alloc] initWithCenterCoordinate:centerCoordinate
                                          altitude:altitude
                                             pitch:pitch
-                                          heading:heading];
+                                          heading:heading
+                                          padding:MGLEdgeInsetsZero];
 }
 
 + (instancetype)cameraLookingAtCenterCoordinate:(CLLocationCoordinate2D)centerCoordinate
@@ -72,28 +73,41 @@ BOOL MGLEqualFloatWithAccuracy(CGFloat left, CGFloat right, CGFloat accuracy)
     return [[self alloc] initWithCenterCoordinate:centerCoordinate
                                          altitude:altitude
                                             pitch:pitch
-                                           heading:heading
-                                           padding:MGLEdgeInsetsZero];
+                                          heading:heading
+                                          padding:MGLEdgeInsetsZero];
 }
 
 + (instancetype)cameraLookingAtCenterCoordinate:(CLLocationCoordinate2D)centerCoordinate
-                                        altitude:(CLLocationDistance)altitude
-                                           pitch:(CGFloat)pitch
-                                         heading:(CLLocationDirection)heading
-                                         padding:(MGLEdgeInsets)padding
+                                       altitude:(CLLocationDistance)altitude
+                                          pitch:(CGFloat)pitch
+                                        heading:(CLLocationDirection)heading
+                                        padding:(MGLEdgeInsets)padding
 {
     return [[self alloc] initWithCenterCoordinate:centerCoordinate
-                                          altitude:altitude
-                                             pitch:pitch
-                                           heading:heading
-                                           padding:padding];
+                                         altitude:altitude
+                                            pitch:pitch
+                                          heading:heading
+                                          padding:padding];
+}
+
++ (instancetype)cameraLookingAtCenterCoordinate:(CLLocationCoordinate2D)centerCoordinate
+                                   fromDistance:(CLLocationDistance)distance
+                                          pitch:(CGFloat)pitch
+                                        heading:(CLLocationDirection)heading
+{
+    // TODO: Remove this compatibility shim in favor of `-cameraLookingAtCenterCoordinate:acrossDistance:pitch:heading:.
+    // https://github.com/mapbox/mapbox-gl-native/issues/12943
+    return [MGLMapCamera cameraLookingAtCenterCoordinate:centerCoordinate
+                                                altitude:distance
+                                                   pitch:pitch
+                                                 heading:heading];
 }
 
 - (instancetype)initWithCenterCoordinate:(CLLocationCoordinate2D)centerCoordinate
                                 altitude:(CLLocationDistance)altitude
                                    pitch:(CGFloat)pitch
                                  heading:(CLLocationDirection)heading
-                                     padding:(MGLEdgeInsets)padding
+                                 padding:(MGLEdgeInsets)padding
 {
     MGLLogDebug(@"Initializing withCenterCoordinate: %@ altitude: %.0fm pitch: %f° heading: %f° padding:%@ padding; %f, %f, %f, %f", MGLStringFromCLLocationCoordinate2D(centerCoordinate), altitude, pitch, heading, padding.top, padding.left, padding.bottom, padding.right);
     if (self = [super init])
@@ -144,7 +158,7 @@ BOOL MGLEqualFloatWithAccuracy(CGFloat left, CGFloat right, CGFloat accuracy)
                                                               altitude:_altitude
                                                                  pitch:_pitch
                                                                heading:_heading
-                                                                padding:_padding];
+                                                               padding:_padding];
 }
 
 + (NSSet<NSString *> *)keyPathsForValuesAffectingViewingDistance {
@@ -165,7 +179,7 @@ BOOL MGLEqualFloatWithAccuracy(CGFloat left, CGFloat right, CGFloat accuracy)
 - (NSString *)description
 {
     return [NSString stringWithFormat:@"<%@: %p; centerCoordinate = %f, %f; altitude = %.0fm; heading = %.0f°; pitch = %.0f° ; padding = %f, %f, %f, %f>",
-             NSStringFromClass([self class]), (void *)self, _centerCoordinate.latitude, _centerCoordinate.longitude, _altitude, _heading, _pitch, _padding.top, _padding.left, _padding.bottom, _padding.right];
+            NSStringFromClass([self class]), (void *)self, _centerCoordinate.latitude, _centerCoordinate.longitude, _altitude, _heading, _pitch, _padding.top, _padding.left, _padding.bottom, _padding.right];
 }
 
 - (BOOL)isEqual:(id)other
@@ -178,13 +192,13 @@ BOOL MGLEqualFloatWithAccuracy(CGFloat left, CGFloat right, CGFloat accuracy)
     {
         return YES;
     }
-
+    
     MGLMapCamera *otherCamera = other;
     return (_centerCoordinate.latitude == otherCamera.centerCoordinate.latitude
             && _centerCoordinate.longitude == otherCamera.centerCoordinate.longitude
             && _altitude == otherCamera.altitude
             && _pitch == otherCamera.pitch && _heading == otherCamera.heading
-             && MGLEdgeInsetsEqual(_padding, otherCamera.padding));
+            && MGLEdgeInsetsEqual(_padding, otherCamera.padding));
 }
 
 - (BOOL)isEqualToMapCamera:(MGLMapCamera *)otherCamera
@@ -199,17 +213,17 @@ BOOL MGLEqualFloatWithAccuracy(CGFloat left, CGFloat right, CGFloat accuracy)
             && MGLEqualFloatWithAccuracy(_altitude, otherCamera.altitude, 1e-6)
             && MGLEqualFloatWithAccuracy(_pitch, otherCamera.pitch, 1)
             && MGLEqualFloatWithAccuracy(_heading, otherCamera.heading, 1))
-             && MGLEqualFloatWithAccuracy(_padding.left, otherCamera.padding.left, 1e-6)
-             && MGLEqualFloatWithAccuracy(_padding.right, otherCamera.padding.right, 1e-6)
-             && MGLEqualFloatWithAccuracy(_padding.top, otherCamera.padding.top, 1e-6)
-             && MGLEqualFloatWithAccuracy(_padding.bottom, otherCamera.padding.bottom, 1e-6);
+    && MGLEqualFloatWithAccuracy(_padding.left, otherCamera.padding.left, 1e-6)
+    && MGLEqualFloatWithAccuracy(_padding.right, otherCamera.padding.right, 1e-6)
+    && MGLEqualFloatWithAccuracy(_padding.top, otherCamera.padding.top, 1e-6)
+    && MGLEqualFloatWithAccuracy(_padding.bottom, otherCamera.padding.bottom, 1e-6);
 }
 
 - (NSUInteger)hash
 {
     return (@(_centerCoordinate.latitude).hash + @(_centerCoordinate.longitude).hash
             + @(_altitude).hash + @(_pitch).hash + @(_heading).hash + @(_padding.left).hash
-             + @(_padding.right).hash + @(_padding.top).hash + @(_padding.bottom).hash);
+            + @(_padding.right).hash + @(_padding.top).hash + @(_padding.bottom).hash);
 }
 
 @end
